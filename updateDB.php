@@ -69,10 +69,20 @@ $data3 = file_get_contents("https://dati.venezia.it/sites/default/files/dataset/
 $jsonData3 = json_decode($data3, true);
 
 // Create the SQL query to insert the data into the MySQL db
-$sql3 = "INSERT INTO vento ( ID_stazione, stazione, data, valore) VALUES ";
+$sql3 = "INSERT INTO vento ( ID_stazione, stazione, data, gradi, velocita1, velocita2) VALUES ";
+
 // Loop through the JSON data and create a new set of values for each data item
 foreach ($jsonData3 as $item) {
-    $sql3 .= "('" . $item['ID_stazione'] . "', '" . $item['stazione'] ."', '" . $item['data'] . "', '" . $item['valore'] . "'),";
+    // Split the "valore" column into three separate columns
+    $valoreArray = explode(", ", $item['valore']);
+
+    // Assign the values from the array to the appropriate columns
+    $gradi = str_replace(" Gradi", "", $valoreArray[0]);
+    $velocita1 = str_replace(" m\/s", "", $valoreArray[1]);
+    $velocita2 = str_replace(" m\/s", "", $valoreArray[2]);
+
+    // Add the data to the SQL query
+    $sql3 .= "('" . $item['ID_stazione'] . "', '" . $item['stazione'] ."', '" . $item['data'] . "', '" . $gradi . "', '" . $velocita1 . "', '" . $velocita2 . "'),";
 }
 
 // Remove the last comma from the SQL query
@@ -110,8 +120,3 @@ if ($conn->query($sql4) === TRUE) {
 // Close the connection
 $conn->close();
 ?>
-$urlPressione = "https://dati.venezia.it/sites/default/files/dataset/opendata/pressione.json"
-$urlPrevMarea = "http://dati.venezia.it/sites/default/files/dataset/opendata/previsione.json"
-$urlOndaMare = "http://dati.venezia.it/sites/default/files/dataset/opendata/onde_mare.json"
-$urlOndaLaguna = "http://dati.venezia.it/sites/default/files/dataset/opendata/onde_laguna.json"
-$urlTempAria = "http://dati.venezia.it/sites/default/files/dataset/opendata/temparia.json"
