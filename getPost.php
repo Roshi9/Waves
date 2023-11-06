@@ -1,5 +1,4 @@
 <?php
-include 'db_connect.php';
 
 $servername = "localhost";
 $username = "Roshi";
@@ -13,12 +12,14 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
-$latitude = $_POST['latitude'];
-$longitude = $_POST['longitude'];
-$datetime = $_POST['datetime'];
-
-$sql = "INSERT INTO catture (latDDN, lonDDE, data)
+if(array_key_exists('latitude', $_POST) && array_key_exists('longitude', $_POST) && array_key_exists('datetime', $_POST)) {
+    $latitude = $_POST['latitude'];
+    $longitude = $_POST['longitude'];
+    $datetime = $_POST['datetime'];
+} else {
+    die("Data not set");
+}
+$sql = "INSERT INTO catture (latitude, longitude, datetime)
 VALUES ('$latitude', '$longitude', '$datetime')";
 
 if ($conn->query($sql) === TRUE) {
